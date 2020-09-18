@@ -3,26 +3,24 @@ author: chaofanyang
 descrption: 日志类模板
 '''
 import logging
-import logging.handlers
-
-from logging.handlers import RotatingFileHandler
+from logging import handlers
 
 
 class Logger:
+    level_relations = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
+    }
 
-    def __init__(self, log_file_path : str, logger_name: str):
-        self.__logger = logging.getLogger(logger_name)
-        self.__logger.setLevel(logging.DEBUG)
-
-        handler = RotatingFileHandler(log_file_path, maxBytes=10000, backupCount=1, encoding='utf-8')
-        logging.root.handlers = [handler]  # werkzeug日志重定向到文件
-        logging_format = logging.Formatter(
-            '[%(asctime)s][%(levelname)s][%(pathname)s:%(lineno)s - %(funcName)s()][msg]%(message)s'
-        )
-        handler.setFormatter(logging_format)
-
-    def get_log(self):
-        return self.__logger
-
-
-Logger = Logger(log_file_path='path', logger_name='name')  # 实例化
+    def __init__(self, log_file_path : str, logger_name: str, level='info', fmt='[%(asctime)s][%(levelname)s][%(pathname)s:%(lineno)s - %(funcName)s()][msg]%(message)s'):
+        self.logger = logging.getLogger(logger_name)
+        format_str = logging.Formatter(fmt)
+        self.logger.setLevel(self.level_relations.get(level))
+        sh = logging.StreamHandler()  # 向屏幕输出
+        sh.setFormatter(format_str) # 设置屏幕输出格式
+        th = handlers.TimedRotatingFileHandler(filename=log_file_path, encoding='utf-8')
+        th.setFormatter(format_str)
+        self.logger.addHandler(sh)
+        self.logger.addHandler(th)
