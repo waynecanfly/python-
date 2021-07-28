@@ -5,7 +5,29 @@ descrption: 日志类模板
 import logging
 from logging import handlers
 
+def Singleton(cls):
+    """
+    单例模式
+    :param cls:
+    :return:
+    """
+    _instance = {}
 
+    def _singleton(*args, **kargs):
+        if cls not in _instance:
+            process_name = 'Zoom.exe'
+            # 判读是否已经启动，启动就将进程杀死
+            if proc_exist(process_name):
+                # 通过进程名称杀死进程
+                os.system('taskkill /f /im %s' % process_name)
+                time.sleep(2)
+            _instance[cls] = cls(*args, **kargs)
+        return _instance[cls]
+
+    return _singleton
+
+
+@Singleton
 class Logger:
     level_relations = {
         'debug': logging.DEBUG,
