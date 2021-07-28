@@ -15,12 +15,6 @@ def Singleton(cls):
 
     def _singleton(*args, **kargs):
         if cls not in _instance:
-            process_name = 'Zoom.exe'
-            # 判读是否已经启动，启动就将进程杀死
-            if proc_exist(process_name):
-                # 通过进程名称杀死进程
-                os.system('taskkill /f /im %s' % process_name)
-                time.sleep(2)
             _instance[cls] = cls(*args, **kargs)
         return _instance[cls]
 
